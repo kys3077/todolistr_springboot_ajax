@@ -17,7 +17,8 @@ import java.util.List;
 @org.springframework.web.bind.annotation.RestController
 @Getter @Setter
 @RequiredArgsConstructor
-public class RestController {
+public class CatalogApiController {
+    
     private final CatalogService catalogService;
     private final RealJpaCatalogRepository realJpaCatalogRepository;
 
