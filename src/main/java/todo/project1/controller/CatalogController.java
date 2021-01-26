@@ -31,8 +31,6 @@ public class CatalogController {
     private final CatalogService catalogService;
     private final RealJpaCatalogRepository realJpaCatalogRepository;
 
-
-
     @GetMapping(value = "/")
     public String list(Model model, @PageableDefault(size=5)Pageable pageable) {
         Page<Catalog> catalogs = realJpaCatalogRepository.findAll(pageable);
@@ -43,25 +41,6 @@ public class CatalogController {
         model.addAttribute("endPage", endPage);
         model.addAttribute("catalogs", catalogs);
         return "catalogs/catalogList";
-    }
-
-
-    @PostMapping("/{catalogId}/update")
-    @ResponseBody
-    public Page<Catalog> updateCatalog(@PathVariable("catalogId") Long catalogId, String title, String content
-            , @PageableDefault(size=5)Pageable pageable) {
-
-        Catalog catalog = new Catalog();
-        catalog.setId(catalogId);
-        catalog.setTitle(title);
-        catalog.setContent(content);
-        catalog.setThis_date(catalogService.findOne(catalogId).getThis_date());
-
-        catalogService.register(catalog);
-
-        Page<Catalog> catalogs = realJpaCatalogRepository.findAll(pageable);
-
-        return catalogs;
     }
 
 }

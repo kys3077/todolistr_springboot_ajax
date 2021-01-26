@@ -20,7 +20,7 @@ function insertContent() {
 
     $.ajax({
         url: action,
-        type: "PUT",
+        type: "POST",
         data:{
             title: num1,
             content: num2

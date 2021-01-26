@@ -21,7 +21,7 @@ public class RestController {
     private final CatalogService catalogService;
     private final RealJpaCatalogRepository realJpaCatalogRepository;
 
-    @PutMapping("/")
+    @PostMapping("/")
     public Page<Catalog> create(String title, String content, @PageableDefault(size=5)Pageable pageable) {
         Catalog catalog = new Catalog();
         catalog.setTitle(title);
@@ -34,6 +34,24 @@ public class RestController {
 
         return catalogs;
     }
+
+    @PutMapping("/{catalogId}")
+    public Page<Catalog> updateCatalog(@PathVariable("catalogId") Long catalogId, String title, String content
+            , @PageableDefault(size=5)Pageable pageable) {
+
+        Catalog catalog = new Catalog();
+        catalog.setId(catalogId);
+        catalog.setTitle(title);
+        catalog.setContent(content);
+        catalog.setThis_date(catalogService.findOne(catalogId).getThis_date());
+
+        catalogService.register(catalog);
+
+        Page<Catalog> catalogs = realJpaCatalogRepository.findAll(pageable);
+
+        return catalogs;
+    }
+
 
     @DeleteMapping("/{catalogId}")
     public Page<Catalog> deleteCatalog(@PathVariable("catalogId") Long catalogId, @PageableDefault(size=5) Pageable pageable) {
