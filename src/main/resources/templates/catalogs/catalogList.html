@@ -9,117 +9,14 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
           integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-    <link href="starter-template.css" th:href="@{/starter-template.css}" rel="stylesheet">
 
-    <link rel="stylesheet" href="./style.css">
+    <link th:href="@{/style.css}" rel="stylesheet" />
     <title>
         To Do List
     </title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-    <script>
-        var totalel = [[${catalogs.totalElements}]];//총 리스트 개수
-        function showTable(data) {
-            let tablesrc = '';
-            for (let i = 0; i < data.content.length; i++) {
-                    tablesrc += '<tr><td id = ' + data.content[i].id + 'title>' + data.content[i].title + '</td><td id = ' + data.content[i].id + 'content>' + data.content[i].content
-                        + '</td><td id = ' + data.content[i].id + 'this_date>' + data.content[i].this_date + '</td><td><a href=javascript:deleteContent(' + data.content[i].id + ')>삭제</a></td>\n' +
-                        '                <td id = ' + data.content[i].id + 'update><a href=javascript:updateContent(' + data.content[i].id + ')>수정</a></td>'
-                        + '</tr>';
-            }
-            document.getElementById("tableBody").innerHTML = tablesrc;
-            showTotalElements()
-        }
 
-        function insertContent() {
-            totalel = totalel + 1;
-            const form = document.form1;
-
-            const num1 = form.input_title.value;
-            const num2 = form.input_content.value;
-
-            var page = [[${catalogs.pageable.pageNumber}]];
-            const action = "/doRegister/" + "?page=" + page;
-
-            $.post(//get방식으로
-                action,//action으로
-                {//편지 내용을 보낸다
-                    title: num1,
-                    content: num2
-                },//네트워크로 서버로 갔다가 돌아올때 실행 되는 것이 아래 function
-                showTable
-            );
-            document.getElementById("Panel").innerHTML = "등록되었습니다.";
-        }
-
-        function showRegisterForm() {
-            document.getElementById("Panel").innerHTML = "";
-
-            var txt = `<input type = "text" name = "input_title" placeholder="제목을 입력하세요"  style="width: 30%"/>
-            <input type = "text" name = "input_content" placeholder="내용을 입력하세요" style="width: 50%;"/>`;
-            document.getElementById("Panel").innerHTML += txt;
-        }
-
-    </script>
-
-    <script th:inline="javascript">
-        function deleteContent(id) {
-            //이렇게 받는줄 알았는데 그냥 액션만 넣어주면 되는거였음..
-            // var form = document.createElement("form");
-            // form.setAttribute("name", "form2");
-            // form.setAttribute("method", "POST");
-            //form.setAttribute("action", id + "/cancel");
-            // document.body.appendChild(form);
-            //form.submit();
-
-            totalel = totalel - 1;
-            var page = [[${catalogs.pageable.pageNumber}]]
-            const action = id + "/delete/" + "?page=" + page;
-            $.post(
-                action,
-                showTable
-            );
-            document.getElementById("Panel").innerHTML = "삭제되었습니다.";
-        }
-
-        function updateContent(id) {
-
-            const title = document.getElementById(id + "title").textContent;
-            const content = document.getElementById(id + "content").textContent;
-            const this_date = document.getElementById(id + "this_date").textContent;
-
-
-            document.getElementById(id + "title").innerHTML = "<input id = 'updateTitle' type = 'text' name = 'input_title' value = " + '"' + title + '"' + ">";
-            document.getElementById(id + "content").innerHTML = "<input id = 'updateContent'type = 'text' name = 'input_content' value = " + '"' + content + '"' + ">";
-            document.getElementById(id + "this_date").innerHTML = "<input id = 'updateThis_date'type = 'text' name = 'input_this_date' value = " + this_date + ">";
-            document.getElementById(id + "update").innerHTML = "<a href=javascript:finishUpdateContent(" + id + ")>완료</a>"
-
-        }
-
-        function finishUpdateContent(id) {
-            var temp1 = document.getElementById("updateTitle").value;
-            var temp2 = document.getElementById("updateContent").value;
-
-            var page = [[${catalogs.pageable.pageNumber}]]
-            const action = id + "/update/" + "?page=" + page;
-            $.post(
-                action,
-                {
-                    title: temp1,
-                    content: temp2
-                },
-                showTable
-            );
-            document.getElementById("Panel").innerHTML = "수정 되었습니다.";
-
-        }
-
-        function showTotalElements(){
-            document.getElementById("totalelements").innerHTML= `총 리스트 개수 : <span>` + totalel + `</span>`
-        }
-
-
-    </script>
 </head>
 
 <body>
@@ -187,7 +84,64 @@
         </ul>
     </nav>
 </div>
+<script th:inline="javascript">
+    var totalel = [[${catalogs.totalElements}]];//총 리스트 개수
+    var page = [[${catalogs.pageable.pageNumber}]];//페이지
+    function deleteContent(id) {
+        //이렇게 받는줄 알았는데 그냥 액션만 넣어주면 되는거였음..
+        // var form = document.createElement("form");
+        // form.setAttribute("name", "form2");
+        // form.setAttribute("method", "POST");
+        //form.setAttribute("action", id + "/cancel");
+        // document.body.appendChild(form);
+        //form.submit();
+
+        totalel = totalel - 1;
+        var page = [[${catalogs.pageable.pageNumber}]]
+        const action = id + "/delete/" + "?page=" + page;
+        $.post(
+            action,
+            showTable
+        );
+        document.getElementById("Panel").innerHTML = "삭제되었습니다.";
+    }
+
+    function updateContent(id) {
+
+        const title = document.getElementById(id + "title").textContent;
+        const content = document.getElementById(id + "content").textContent;
+        const this_date = document.getElementById(id + "this_date").textContent;
 
 
+        document.getElementById(id + "title").innerHTML = "<input id = 'updateTitle' type = 'text' name = 'input_title' value = " + '"' + title + '"' + ">";
+        document.getElementById(id + "content").innerHTML = "<input id = 'updateContent'type = 'text' name = 'input_content' value = " + '"' + content + '"' + ">";
+        document.getElementById(id + "this_date").innerHTML = "<input id = 'updateThis_date'type = 'text' name = 'input_this_date' value = " + this_date + ">";
+        document.getElementById(id + "update").innerHTML = "<a href=javascript:finishUpdateContent(" + id + ")>완료</a>"
+
+    }
+
+    function finishUpdateContent(id) {
+        var temp1 = document.getElementById("updateTitle").value;
+        var temp2 = document.getElementById("updateContent").value;
+
+        var page = [[${catalogs.pageable.pageNumber}]]
+        const action = id + "/update/" + "?page=" + page;
+        $.post(
+            action,
+            {
+                title: temp1,
+                content: temp2
+            },
+            showTable
+        );
+        document.getElementById("Panel").innerHTML = "수정 되었습니다.";
+
+    }
+
+    function showTotalElements(){
+        document.getElementById("totalelements").innerHTML= `총 리스트 개수 : <span>` + totalel + `</span>`
+    }
+</script>
+<script th:src="@{/fc.js}"></script>
 </body>
 </html>
