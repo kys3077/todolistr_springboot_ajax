@@ -1,10 +1,9 @@
-
 function showTable(data) {
     let tablesrc = '';
-    for (let i = 0; i < data.content.length; i++) {
-        tablesrc += '<tr><td id = ' + data.content[i].id + 'title>' + data.content[i].title + '</td><td id = ' + data.content[i].id + 'content>' + data.content[i].content
-            + '</td><td id = ' + data.content[i].id + 'this_date>' + data.content[i].this_date + '</td><td><a href=javascript:deleteContent(' + data.content[i].id + ')>삭제</a></td>\n' +
-            '                <td id = ' + data.content[i].id + 'update><a href=javascript:updateContent(' + data.content[i].id + ')>수정</a></td>'
+    for (key in data) {
+        tablesrc += '<tr><td id = ' + data[key].id + 'title>' + data[key].title + '</td><td id = ' + data[key].id + 'content>' + data[key].content
+            + '</td><td id = ' + data[key].id + 'this_date>' + data[key].this_date + '</td><td><a href=javascript:deleteContent(' + data[key].id + ')>삭제</a></td>\n' +
+            '                <td id = ' + data[key].id + 'update><a href=javascript:updateContent(' + data[key].id + ')>수정</a></td>'
             + '</tr>';
     }
     document.getElementById("tableBody").innerHTML = tablesrc;
@@ -21,12 +20,18 @@ function insertContent() {
     $.ajax({
         url: action,
         type: "POST",
-        data:{
+        data: {
             title: num1,
             content: num2
         },
         success: function (data) {
-            showTable(data);
+            $.ajax({
+                url: "/list",
+                type: "GET",
+                success: function (data) {
+                    showTable(data);
+                }
+            });
         }
     });
     document.getElementById("Panel").innerHTML = "등록되었습니다.";

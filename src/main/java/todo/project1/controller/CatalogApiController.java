@@ -15,15 +15,21 @@ import java.time.LocalDate;
 import java.util.List;
 
 @org.springframework.web.bind.annotation.RestController
-@Getter @Setter
+@Getter
+@Setter
 @RequiredArgsConstructor
 public class CatalogApiController {
-    
+
     private final CatalogService catalogService;
     private final RealJpaCatalogRepository realJpaCatalogRepository;
 
+    @GetMapping("/list")
+    public List<Catalog> showList() {
+        return catalogService.findCatalog();
+    }
+
     @PostMapping("/")
-    public Page<Catalog> create(String title, String content, @PageableDefault(size=5)Pageable pageable) {
+    public Page<Catalog> create(String title, String content, @PageableDefault(size = 5) Pageable pageable) {
         Catalog catalog = new Catalog();
         catalog.setTitle(title);
         catalog.setContent(content);
@@ -38,7 +44,7 @@ public class CatalogApiController {
 
     @PutMapping("/{catalogId}")
     public Page<Catalog> updateCatalog(@PathVariable("catalogId") Long catalogId, String title, String content
-            , @PageableDefault(size=5)Pageable pageable) {
+            , @PageableDefault(size = 5) Pageable pageable) {
 
         Catalog catalog = new Catalog();
         catalog.setId(catalogId);
@@ -55,7 +61,7 @@ public class CatalogApiController {
 
 
     @DeleteMapping("/{catalogId}")
-    public Page<Catalog> deleteCatalog(@PathVariable("catalogId") Long catalogId, @PageableDefault(size=5) Pageable pageable) {
+    public Page<Catalog> deleteCatalog(@PathVariable("catalogId") Long catalogId, @PageableDefault(size = 5) Pageable pageable) {
         Catalog catalog = new Catalog();
         catalog.setTitle(catalogService.findOne(catalogId).getTitle());
         catalog.setContent(catalogService.findOne(catalogId).getContent());
