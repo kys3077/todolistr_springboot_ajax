@@ -1,0 +1,84 @@
+
+@import url(//fonts.googleapis.com/earlyaccess/nanumpenscript.css);
+@import url(//fonts.googleapis.com/earlyaccess/jejugothic.css);
+@import url(//fonts.googleapis.com/earlyaccess/jejumyeongjo.css);
+h1 {
+    margin-top: 50px;
+    margin-bottom: 50px;
+        font-family: 'Nanum Pen Script', cursive;
+    font-weight: bold;
+        text-align: center;
+        font-size : 90px;
+}
+
+#totalelements{
+    font-family: 'Jeju Gothic', sans-serif;
+
+}
+/*body {*/
+/*        background-color: white;*/
+/*}*/
+
+/*input[type=button], input[type=submit], input[type=reset] {*/
+/*        background-color: teal;*/
+/*        color: white;*/
+/*        padding: 8px 16px;*/
+/*        text-decoration: none;*/
+/*        margin: 4px 2px;*/
+/*}*/
+
+/*.inputContainer{*/
+/*        font-family: 'Jeju Gothic', sans-serif;*/
+/*        text-align: -webkit-center;*/
+/*        margin-bottom:10px;*/
+/*}*/
+
+
+table{
+        font-family: 'Jeju Gothic', sans-serif;
+        margin-top: 10px;
+    margin-bottom: 10px;
+        text-align: center;
+}
+
+#Panel{
+    font-family: 'Jeju Gothic', sans-serif;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+/*th{*/
+/*        background-color: teal; color: white;*/
+/*}*/
+
+/*th, td{*/
+/*        border: 2px solid;*/
+/*        padding: 10px 5px;*/
+/*}*/
+
+/*input[type="text"]*/
+/*{*/
+/*        height: auto; !* 높이 초기화 *!*/
+/*        line-height: normal; !* line-height 초기화 *!*/
+/*        padding: .8em .5em; !* 여백 설정 *!*/
+/*        margin:.8em .5em;*/
+/*}*/
+/*@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap");*/
+
+/*button {*/
+/*        !* 생략 *!*/
+/*        margin: 0;*/
+/*        padding: 0.5rem 1rem;*/
+
+/*        font-family: "Noto Sans KR", sans-serif;*/
+/*        font-size: 1rem;*/
+/*        font-weight: 400;*/
+/*        text-align: center;*/
+/*        text-decoration: none;*/
+
+/*        display: inline-block;*/
+/*        width: auto;*/
+
+/*        border: none;*/
+/*        border-radius: 4px;*/
+/*}*/
