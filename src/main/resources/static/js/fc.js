@@ -14,20 +14,21 @@ function showTable(data) {
 function insertContent() {
     totalel = totalel + 1;
     const form = document.form1;
-
     const num1 = form.input_title.value;
     const num2 = form.input_content.value;
+    const action = "/" + "?page=" + page;
 
-    const action = "/doRegister/" + "?page=" + page;
-
-    $.post(//get방식으로
-        action,//action으로
-        {//편지 내용을 보낸다
+    $.ajax({
+        url: action,
+        type: "PUT",
+        data:{
             title: num1,
             content: num2
-        },//네트워크로 서버로 갔다가 돌아올때 실행 되는 것이 아래 function
-        showTable
-    );
+        },
+        success: function (data) {
+            showTable(data);
+        }
+    });
     document.getElementById("Panel").innerHTML = "등록되었습니다.";
 }
 

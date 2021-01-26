@@ -25,30 +25,13 @@ import java.util.Map;
 
 @Controller
 @Getter @Setter
+@RequiredArgsConstructor
 public class CatalogController {
 
     private final CatalogService catalogService;
     private final RealJpaCatalogRepository realJpaCatalogRepository;
 
-    public CatalogController(CatalogService catalogService, RealJpaCatalogRepository realJpaCatalogRepository) {
-        this.catalogService = catalogService;
-        this.realJpaCatalogRepository = realJpaCatalogRepository;
-    }
 
-    @PostMapping(value = "/doRegister")
-    @ResponseBody
-    public Page<Catalog> create(String title, String content, @PageableDefault(size=5)Pageable pageable) {
-        Catalog catalog = new Catalog();
-        catalog.setTitle(title);
-        catalog.setContent(content);
-        catalog.setThis_date(LocalDate.now());
-
-        catalogService.register(catalog);
-
-        Page<Catalog> catalogs = realJpaCatalogRepository.findAll(pageable);
-
-        return catalogs;
-    }
 
     @GetMapping(value = "/")
     public String list(Model model, @PageableDefault(size=5)Pageable pageable) {
@@ -62,22 +45,6 @@ public class CatalogController {
         return "catalogs/catalogList";
     }
 
-    @PostMapping("/{catalogId}/delete")
-    @ResponseBody
-    public Page<Catalog> deleteCatalog(@PathVariable("catalogId") Long catalogId, @PageableDefault(size=5)Pageable pageable) {
-        Catalog catalog = new Catalog();
-        catalog.setTitle(catalogService.findOne(catalogId).getTitle());
-        catalog.setContent(catalogService.findOne(catalogId).getContent());
-        catalog.setThis_date(catalogService.findOne(catalogId).getThis_date());
-        catalog.setId(catalogService.findOne(catalogId).getId());
-
-        catalogService.delete(catalog);
-
-
-        Page<Catalog> catalogs = realJpaCatalogRepository.findAll(pageable);
-
-        return catalogs;
-    }
 
     @PostMapping("/{catalogId}/update")
     @ResponseBody
