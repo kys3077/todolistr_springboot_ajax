@@ -63,16 +63,13 @@
 
     <nav aria-label="Page navigation example">
         <ul class="pagination justify-content-center">
-            <li class="page-item" th:classappend="${1 == catalogs.pageable.pageNumber + 1} ? 'disabled'">
-                <a class="page-link" href="#" th:href="@{/(page=${catalogs.pageable.pageNumber - 1})}"
-                   tabindex="-1" aria-disabled="true">이전</a>
+            <li class="page-item">
+                <a class="page-link" href="#" th:href="@{/(page=${catalogs.pageable.pageNumber - 1})}">이전</a>
             </li>
-            <li class="page-item" th:classappend="${i == catalogs.pageable.pageNumber + 1} ? 'disabled'"
-                th:each="i: ${#numbers.sequence(startPage, endPage)}">
-                <a class="page-link" href="#" th:href="'javascript:showPage('+${i - 1}+',5)'" th:text="${i}">1</a></li>
+            <li class="page-item" th:each="i: ${#numbers.sequence(startPage, endPage)}">
+                <a class="page-link" href="#" th:href="'javascript:showPage('+${i - 1}+')'" th:text="${i}">1</a></li>
 
-            <li class="page-item"
-                th:classappend="${catalogs.totalPages == catalogs.pageable.pageNumber + 1} ? 'disabled'">
+            <li class="page-item">
                 <a class="page-link" href="#" th:href="@{/(page=${catalogs.pageable.pageNumber + 1})}">다음</a>
             </li>
         </ul>
@@ -80,12 +77,17 @@
 </div>
 <script th:inline="javascript">
 
-    function showPage(page, size) {
+    var totalel = [[${catalogs.totalElements}]];//총 리스트 개수
+    var page = 0;//페이지
+    var size = 5;
+
+    function showPage(localPage) {
+        page = localPage;//페이지 다시 초기화 시켜줘야 연동됨
         $.ajax({
             url: "/list",
             type: "GET",
             data: {
-                page: page,
+                page: localPage,
                 size: size
             },
             success: function (data) {
@@ -95,9 +97,6 @@
         });
     }
 
-    var totalel = [[${catalogs.totalElements}]];//총 리스트 개수
-    var page = [[${catalogs.pageable.pageNumber}]];//페이지
-    var size = 5;
 
     function deleteContent(id) {
 

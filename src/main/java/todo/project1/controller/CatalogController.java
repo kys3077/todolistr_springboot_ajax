@@ -35,8 +35,10 @@ public class CatalogController {
     public String list(Model model, @PageableDefault(size=5)Pageable pageable) {
         Page<Catalog> catalogs = realJpaCatalogRepository.findAll(pageable);
 
-        int startPage = Math.max(1, catalogs.getPageable().getPageNumber() - 4);
-        int endPage = Math.min(catalogs.getTotalPages(), catalogs.getPageable().getPageNumber() + 4);
+//        int startPage = Math.max(1, catalogs.getPageable().getPageNumber() - 4);
+//        int endPage = Math.min(catalogs.getTotalPages(), catalogs.getPageable().getPageNumber() + 4);
+        int startPage = 1;
+        int endPage = catalogs.getTotalPages();
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
         model.addAttribute("catalogs", catalogs);
