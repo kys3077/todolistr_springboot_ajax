@@ -63,15 +63,15 @@
 
     <nav aria-label="Page navigation example">
         <ul class="pagination justify-content-center">
-            <li class="page-item">
-                <a class="page-link" href="#" th:href="@{/(page=${catalogs.pageable.pageNumber - 1})}">이전</a>
-            </li>
+<!--            <li class="page-item">-->
+<!--                <a class="page-link" href="#" th:href="@{/(page=${catalogs.pageable.pageNumber - 1})}">이전</a>-->
+<!--            </li>-->
             <li class="page-item" th:each="i: ${#numbers.sequence(startPage, endPage)}">
                 <a class="page-link" href="#" th:href="'javascript:showPage('+${i - 1}+')'" th:text="${i}">1</a></li>
 
-            <li class="page-item">
-                <a class="page-link" href="#" th:href="@{/(page=${catalogs.pageable.pageNumber + 1})}">다음</a>
-            </li>
+<!--            <li class="page-item">-->
+<!--                <a class="page-link" href="#" th:href="@{/(page=${catalogs.pageable.pageNumber + 1})}">다음</a>-->
+<!--            </li>-->
         </ul>
     </nav>
 </div>
@@ -147,9 +147,6 @@
 
     }
 
-    function showTotalElements() {
-        document.getElementById("totalelements").innerHTML = `총 리스트 개수 : <span>` + totalel + `</span>`
-    }
 </script>
 <script th:src="@{/js/fc.js}"></script>
 </body>

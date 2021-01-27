@@ -4,17 +4,17 @@ function insertContent() {
     const form = document.form1;
     const num1 = form.input_title.value;
     const num2 = form.input_content.value;
-    const action = "/" + "?page=" + page;
 
     $.ajax({
-        url: action,
+        url: "/",
         type: "POST",
         data: {
             title: num1,
             content: num2
         },
         success: function (data) {
-            showPage(page, size, data);
+            showPage(parseInt((totalel-0.1) / size));
+            console.log(parseInt((totalel-0.1) / size));
         }
     });
     document.getElementById("Panel").innerHTML = "등록되었습니다.";
@@ -41,8 +41,6 @@ function showTable(data) {
     showTotalElements()
 }
 
-function showPageItem() {
-    for (let i = 0; i < totalel / size; i++) {
-
-    }
+function showTotalElements() {
+    document.getElementById("totalelements").innerHTML = `총 리스트 개수 : <span>` + totalel + `</span>`
 }
