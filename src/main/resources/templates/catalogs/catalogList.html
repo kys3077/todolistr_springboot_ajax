@@ -101,12 +101,11 @@
     function deleteContent(id) {
 
         totalel = totalel - 1;
-        const action = id + "/delete/" + "?page=" + page;
         $.ajax({
             url: id + "/" + "?page=" + page,
             type: "DELETE",
             success: function (data) {
-                showTable(data);
+                showPage(page);
             }
         });
         document.getElementById("Panel").innerHTML = "삭제되었습니다.";
@@ -140,7 +139,7 @@
                 content: temp2
             },
             success: function (data) {
-                showTable(data);
+                showPage(page);
             }
         });
         document.getElementById("Panel").innerHTML = "수정 되었습니다.";
