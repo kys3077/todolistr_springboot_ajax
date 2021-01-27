@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
@@ -24,8 +25,10 @@ public class CatalogApiController {
     private final RealJpaCatalogRepository realJpaCatalogRepository;
 
     @GetMapping("/list")
-    public List<Catalog> showList() {
-        return catalogService.findCatalog();
+    public Page<Catalog> showList(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Catalog> catalogs = realJpaCatalogRepository.findAll(pageable);
+        return catalogs;
     }
 
     @PostMapping("/")
