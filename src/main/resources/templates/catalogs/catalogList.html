@@ -2,6 +2,16 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
+    <base href="https://demos.telerik.com/kendo-ui/grid/from-table">
+    <style>html {
+        font-size: 14px;
+        font-family: Arial, Helvetica, sans-serif;
+    }</style>
+    <title></title>
+    <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2019.3.917/styles/kendo.default-v2.min.css"/>
+
+    <script src="https://kendo.cdn.telerik.com/2019.3.917/js/jquery.min.js"></script>
+    <script src="https://kendo.cdn.telerik.com/2019.3.917/js/kendo.all.min.js"></script>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -35,45 +45,24 @@
 ">
             </div>
         </form>
-        <div>
-            <table class="table table-striped">
-                <thead>
-                <tr>
-                    <th>제목</th>
-                    <th>내용</th>
-                    <th>날짜</th>
-                    <th></th>
-                    <th></th>
-                </tr>
-                </thead>
-                <tbody id="tableBody">
-                <tr th:each="catalog : ${catalogs}">
-                    <td th:id="${catalog.id}+'title'" th:text="${catalog.title}"></td>
-                    <td th:id="${catalog.id}+'content'" th:text="${catalog.content}"></td>
-                    <td th:id="${catalog.id}+'this_date'" th:text="${catalog.this_date}"></td>
-                    <td><a href="#" th:href="'javascript:deleteContent('+${catalog.id}+')'">삭제</a></td>
-                    <td th:id="${catalog.id}+'update'"><a href="#"
-                                                          th:href="'javascript:updateContent('+${catalog.id}+')'">수정</a>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
+        <div id="grid"></div>
+        <script>
+            var dataSource = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: "http://localhost:8080/all",
+                        dataType: "json"
+                    }
+                },
+                pageSize: 10
+            });
+            $("#grid").kendoGrid({
+                dataSource: dataSource,
+                pageable: true,
+                sortable: true
+            });
+        </script>
     </div>
-
-    <nav aria-label="Page navigation example">
-        <ul class="pagination justify-content-center">
-<!--            <li class="page-item">-->
-<!--                <a class="page-link" href="#" th:href="@{/(page=${catalogs.pageable.pageNumber - 1})}">이전</a>-->
-<!--            </li>-->
-            <li class="page-item" th:each="i: ${#numbers.sequence(startPage, endPage)}">
-                <a class="page-link" href="#" th:href="'javascript:showPage('+${i - 1}+')'" th:text="${i}">1</a></li>
-
-<!--            <li class="page-item">-->
-<!--                <a class="page-link" href="#" th:href="@{/(page=${catalogs.pageable.pageNumber + 1})}">다음</a>-->
-<!--            </li>-->
-        </ul>
-    </nav>
 </div>
 <script th:inline="javascript">
 
