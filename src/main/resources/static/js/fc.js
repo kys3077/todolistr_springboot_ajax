@@ -13,8 +13,8 @@ function insertContent() {
             content: num2
         },
         success: function (data) {
+            console.log(data);
             showPage(parseInt((totalel-0.1) / size));
-            console.log(parseInt((totalel-0.1) / size));
         }
     });
     document.getElementById("Panel").innerHTML = "등록되었습니다.";

@@ -41,7 +41,7 @@ public class CatalogApiController {
         catalog.setThis_date(LocalDate.now());
 
         catalogService.register(catalog);
-        return new ResponseEntity<>("success", HttpStatus.OK);
+        return new ResponseEntity<>("create success", HttpStatus.OK);
     }
 
     @PutMapping("/{catalogId}")
@@ -56,7 +56,7 @@ public class CatalogApiController {
 
         catalogService.register(catalog);
 
-        return new ResponseEntity<>("success", HttpStatus.OK);
+        return new ResponseEntity<>("update success", HttpStatus.OK);
     }
 
 
@@ -70,7 +70,7 @@ public class CatalogApiController {
 
         catalogService.delete(catalog);
 
-        return new ResponseEntity<>("success", HttpStatus.OK);
+        return new ResponseEntity<>("delete success", HttpStatus.OK);
     }
 
 }
