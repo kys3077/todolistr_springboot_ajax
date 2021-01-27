@@ -102,7 +102,7 @@
 
         totalel = totalel - 1;
         $.ajax({
-            url: id + "/" + "?page=" + page,
+            url: id,
             type: "DELETE",
             success: function (data) {
                 showPage(page);
@@ -129,10 +129,8 @@
         var temp1 = document.getElementById("updateTitle").value;
         var temp2 = document.getElementById("updateContent").value;
 
-        var page = [[${catalogs.pageable.pageNumber}]]
-        const action = id + "/?page=" + page;
         $.ajax({
-            url: action,
+            url: id,
             type: "PUT",
             data: {
                 title: temp1,
