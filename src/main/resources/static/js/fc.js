@@ -1,14 +1,3 @@
-function showTable(data) {
-    let tablesrc = '';
-    for (let i = 0; i < data.content.length; i++) {
-        tablesrc += '<tr><td id = ' + data.content[i].id + 'title>' + data.content[i].title + '</td><td id = ' + data.content[i].id + 'content>' + data.content[i].content
-            + '</td><td id = ' + data.content[i].id + 'this_date>' + data.content[i].this_date + '</td><td><a href=javascript:deleteContent(' + data.content[i].id + ')>삭제</a></td>\n' +
-            '                <td id = ' + data.content[i].id + 'update><a href=javascript:updateContent(' + data.content[i].id + ')>수정</a></td>'
-            + '</tr>';
-    }
-    document.getElementById("tableBody").innerHTML = tablesrc;
-    showTotalElements()
-}
 
 function insertContent() {
     totalel = totalel + 1;
@@ -25,7 +14,7 @@ function insertContent() {
             content: num2
         },
         success: function (data) {
-            showPage(page, 5, data);
+            showPage(page, size, data);
         }
     });
     document.getElementById("Panel").innerHTML = "등록되었습니다.";
@@ -39,17 +28,21 @@ function showRegisterForm() {
     document.getElementById("Panel").innerHTML += txt;
 }
 
-function showPage(page, size, data) {
-    $.ajax({
-        url: "/list",
-        type: "GET",
-        data:{
-            page: page,
-            size: size
-        },
-        success: function (data) {
-            console.log(data);
-            showTable(data);
-        }
-    });
+
+function showTable(data) {
+    let tablesrc = '';
+    for (let i = 0; i < data.content.length; i++) {
+        tablesrc += '<tr><td id = ' + data.content[i].id + 'title>' + data.content[i].title + '</td><td id = ' + data.content[i].id + 'content>' + data.content[i].content
+            + '</td><td id = ' + data.content[i].id + 'this_date>' + data.content[i].this_date + '</td><td><a href=javascript:deleteContent(' + data.content[i].id + ')>삭제</a></td>\n' +
+            '                <td id = ' + data.content[i].id + 'update><a href=javascript:updateContent(' + data.content[i].id + ')>수정</a></td>'
+            + '</tr>';
+    }
+    document.getElementById("tableBody").innerHTML = tablesrc;
+    showTotalElements()
+}
+
+function showPageItem() {
+    for (let i = 0; i < totalel / size; i++) {
+
+    }
 }
