@@ -5,9 +5,9 @@
     <title>
         To Do List
     </title>
-    <link rel="stylesheet" href="styles/kendo.common.min.css" />
-    <link rel="stylesheet" href="styles/kendo.default-v2.min.css" />
-    <link rel="stylesheet" href="styles/kendo.default.mobile.min.css" />
+    <link rel="stylesheet" href="styles/kendo.common.min.css"/>
+    <link rel="stylesheet" href="styles/kendo.default-v2.min.css"/>
+    <link rel="stylesheet" href="styles/kendo.default.mobile.min.css"/>
     <script src="js/jquery.min.js"></script>
     <script src="js/kendo.all.min.js"></script>
     <!-- Required meta tags -->
@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
           integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
     <link th:href="@{/css/style.css}" rel="stylesheet"/>
-<!--    <script src="/js/jquery-3.5.1.min.js"></script>-->
+    <!--    <script src="/js/jquery-3.5.1.min.js"></script>-->
 </head>
 
 <body>
@@ -45,14 +45,75 @@
             var dataSource = new kendo.data.DataSource({
                 transport: {
                     read: {
-                        url: "http://localhost:8080/all",
+                        url: "/all",
                         dataType: "json"
+                    },
+                    destroy: {
+                        url: "http://localhost:8080/500",
+                        dataType: "json",
+                        type: "DELETE"
                     }
                 },
                 pageSize: 10
             });
             $("#grid").kendoGrid({
                 dataSource: dataSource,
+                columns: [
+                    {
+                        field: "id",
+                        title: "ID"
+                    },
+                    {
+                        field: "title",
+                        title: "제목"
+                    },
+                    {
+                        field: "content",
+                        title: "내용"
+                    },
+                    {
+                        field: "this_date",
+                        title: "날짜",
+                        // format: "{0:dd-MM-yyyy}"
+                    },
+                    {
+                        command : [
+                            {
+                                name : "edit",
+                                text : {
+                                    edit : "수정",
+                                    cancel : "취소",
+                                    update : "완료"
+                                }
+                            }, {
+                                name : "destroy",
+                                text : "삭제"
+                            }
+                        ]
+                    }
+                ],
+                schema: {
+                    data: "response.data",
+                    model: {
+                        id: "id",
+                        name: "name",
+                        fields: {
+                            id: {editable: false, type: "string"},
+                            title: {editable: true, validation: {required: true}}
+                        }
+                    }
+                },
+                editable : {//  Settings can edit the data in the list
+                    //  Setting confirmation message is displayed when you delete
+                    confirmation: "삭제하시겠습니까?",
+                    createAt: "top", // add a location, the default is the top: from the first line to add
+                    destroy : true,//  Not be deleted
+                    mode : "inline",//  Set the edit in the form of pop-up box (popup) or in the list (inline)
+                    // template: kendo.template (. $ ( "# editTemplate") html ()) // set the content-loaded pop-up box, set this mode must be a popup
+                },
+                /*groupable: {// Set list head
+                                         messages: {empty: "User Information List"}
+                },*/
                 pageable: true,
                 sortable: true
             });
