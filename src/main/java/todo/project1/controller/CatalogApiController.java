@@ -3,6 +3,7 @@ package todo.project1.controller;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +16,9 @@ import todo.project1.repository.RealJpaCatalogRepository;
 import todo.project1.service.CatalogService;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @org.springframework.web.bind.annotation.RestController
 @Getter
@@ -23,10 +26,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CatalogApiController {
 
+    @Autowired
     private final CatalogService catalogService;
+    @Autowired
     private final RealJpaCatalogRepository realJpaCatalogRepository;
 
-    @GetMapping("/all")
+    @PostMapping("/read")
     public List<Catalog> showAllList(){
         return catalogService.findCatalog();
     }
@@ -37,26 +42,25 @@ public class CatalogApiController {
         return catalogs;
     }
 
-    @PostMapping("/")
-    public ResponseEntity create(String title, String content, @PageableDefault(size = 5) Pageable pageable) {
+    @PostMapping("/create")
+    public ResponseEntity create(@RequestBody Map<String, Object> model) {
         Catalog catalog = new Catalog();
-        catalog.setTitle(title);
-        catalog.setContent(content);
+        catalog.setTitle((String)model.get("title"));
+        catalog.setContent((String)model.get("content"));
         catalog.setThis_date(LocalDate.now());
 
         catalogService.register(catalog);
         return new ResponseEntity<>("create success", HttpStatus.OK);
     }
 
-    @PutMapping("/{catalogId}")
-    public ResponseEntity updateCatalog(@PathVariable("catalogId") Long catalogId, String title, String content
-            , @PageableDefault(size = 5) Pageable pageable) {
-
+    @PostMapping("/update")
+    public ResponseEntity updateCatalog(@RequestBody Map<String, Object> model) {
+        
         Catalog catalog = new Catalog();
-        catalog.setId(catalogId);
-        catalog.setTitle(title);
-        catalog.setContent(content);
-        catalog.setThis_date(catalogService.findOne(catalogId).getThis_date());
+        catalog.setId((Long)model.get("id"));
+        catalog.setTitle((String)model.get("title"));
+        catalog.setContent((String)model.get("content"));
+        catalog.setThis_date(catalogService.findOne(catalog.getId()).getThis_date());
 
         catalogService.register(catalog);
 
@@ -64,13 +68,11 @@ public class CatalogApiController {
     }
 
 
-    @DeleteMapping("/{catalogId}")
-    public ResponseEntity deleteCatalog(@PathVariable("catalogId") Long catalogId, @PageableDefault(size = 5) Pageable pageable) {
+    @PostMapping("/delete")
+    public ResponseEntity deleteCatalog(@RequestBody Map<String, Object> model) {
+        System.out.println("test11");
         Catalog catalog = new Catalog();
-        catalog.setTitle(catalogService.findOne(catalogId).getTitle());
-        catalog.setContent(catalogService.findOne(catalogId).getContent());
-        catalog.setThis_date(catalogService.findOne(catalogId).getThis_date());
-        catalog.setId(catalogService.findOne(catalogId).getId());
+        catalog.setId((Long) model.get("id"));
 
         catalogService.delete(catalog);
 

@@ -42,156 +42,81 @@
         </form>
         <div id="grid"></div>
         <script>
-            var dataSource = new kendo.data.DataSource({
-                transport: {
-                    read: {
-                        url: "/all",
-                        dataType: "json"
-                    },
-                    destroy: {
-                        url: "http://localhost:8080/500",
-                        dataType: "json",
-                        type: "DELETE"
-                    }
-                },
-                pageSize: 10
-            });
-            $("#grid").kendoGrid({
-                dataSource: dataSource,
-                columns: [
-                    {
-                        field: "id",
-                        title: "ID"
-                    },
-                    {
-                        field: "title",
-                        title: "제목"
-                    },
-                    {
-                        field: "content",
-                        title: "내용"
-                    },
-                    {
-                        field: "this_date",
-                        title: "날짜",
-                        // format: "{0:dd-MM-yyyy}"
-                    },
-                    {
-                        command : [
-                            {
-                                name : "edit",
-                                text : {
-                                    edit : "수정",
-                                    cancel : "취소",
-                                    update : "완료"
-                                }
-                            }, {
-                                name : "destroy",
-                                text : "삭제"
+            $(document).ready(function () {
+                var dataSource = new kendo.data.DataSource({
+                    transport: {
+                        read: {
+                            url: "/read",
+                            type: "POST",
+                            dataType: "json",
+                            contentType: "application/json"
+                        },
+                        update: {
+                            url: "/update",
+                            type: "POST",
+                            dataType: "json",
+                            contentType: "application/json"
+                        },
+                        destroy: {
+                            url: "/delete",
+                            type: "POST",
+                            dataType: "json",
+                            contentType: "application/json"
+                        },
+                        create: {
+                            url: "/create",
+                            type: "POST",
+                            dataType: "json",
+                            contentType: "application/json"
+                        },
+                        parameterMap: function(options, operation) {
+                            if (operation !== "read" && options.models) {
+                                console.log(JSON.stringify(options));
+                                return JSON.stringify(options);
                             }
-                        ]
-                    }
-                ],
-                schema: {
-                    data: "response.data",
-                    model: {
-                        id: "id",
-                        name: "name",
-                        fields: {
-                            id: {editable: false, type: "string"},
-                            title: {editable: true, validation: {required: true}}
                         }
-                    }
-                },
-                editable : {//  Settings can edit the data in the list
-                    //  Setting confirmation message is displayed when you delete
-                    confirmation: "삭제하시겠습니까?",
-                    createAt: "top", // add a location, the default is the top: from the first line to add
-                    destroy : true,//  Not be deleted
-                    mode : "inline",//  Set the edit in the form of pop-up box (popup) or in the list (inline)
-                    // template: kendo.template (. $ ( "# editTemplate") html ()) // set the content-loaded pop-up box, set this mode must be a popup
-                },
-                /*groupable: {// Set list head
-                                         messages: {empty: "User Information List"}
-                },*/
-                pageable: true,
-                sortable: true
+                    },
+                    batch: true,
+                    pageSize: 10,
+                    schema: {
+                        model: {
+                            id: "id",
+                            fields: {
+                                title: {validation: {required: true}},
+                                content: {validation: {required: true}},
+                                this_date: {validation: {required: true}}
+                            }
+                        }
+                    },
+                });
+                $("#grid").kendoGrid({
+                    dataSource: dataSource,
+                    pageable: true,
+                    sortable: true,
+                    toolbar: ["create"],
+                    columns: [
+                        {
+                            field: "title",
+                            title: "제목"
+                        },
+                        {
+                            field: "content",
+                            title: "내용"
+                        },
+                        {
+                            field: "this_date",
+                            title: "날짜",
+                            // format: "{0:dd-MM-yyyy}"
+                        },
+                        {
+                            command: ["edit", "destroy"], title: "&nbsp;"
+                        }],
+                    editable: "inline"
+                });
+                console.log(dataSource);
             });
         </script>
     </div>
 </div>
-<script th:inline="javascript">
-
-    var totalel = [[${catalogs.totalElements}]];//총 리스트 개수
-    var page = 0;//페이지
-    var size = 5;
-
-    function showPage(localPage) {
-        page = localPage;//페이지 다시 초기화 시켜줘야 연동됨
-        $.ajax({
-            url: "/list",
-            type: "GET",
-            data: {
-                page: localPage,
-                size: size
-            },
-            success: function (data) {
-                console.log(data);
-                showTable(data);
-            }
-        });
-    }
-
-
-    function deleteContent(id) {
-
-        totalel = totalel - 1;
-        $.ajax({
-            url: id,
-            type: "DELETE",
-            success: function (data) {
-                console.log(data);
-                showPage(page);
-            }
-        });
-        document.getElementById("Panel").innerHTML = "삭제되었습니다.";
-    }
-
-    function updateContent(id) {
-
-        const title = document.getElementById(id + "title").textContent;
-        const content = document.getElementById(id + "content").textContent;
-        const this_date = document.getElementById(id + "this_date").textContent;
-
-
-        document.getElementById(id + "title").innerHTML = "<input id = 'updateTitle' type = 'text' name = 'input_title' value = " + '"' + title + '"' + ">";
-        document.getElementById(id + "content").innerHTML = "<input id = 'updateContent'type = 'text' name = 'input_content' value = " + '"' + content + '"' + ">";
-        document.getElementById(id + "this_date").innerHTML = "<input id = 'updateThis_date'type = 'text' name = 'input_this_date' value = " + this_date + ">";
-        document.getElementById(id + "update").innerHTML = "<a href=javascript:finishUpdateContent(" + id + ")>완료</a>"
-
-    }
-
-    function finishUpdateContent(id) {
-        var temp1 = document.getElementById("updateTitle").value;
-        var temp2 = document.getElementById("updateContent").value;
-
-        $.ajax({
-            url: id,
-            type: "PUT",
-            data: {
-                title: temp1,
-                content: temp2
-            },
-            success: function (data) {
-                console.log(data);
-                showPage(page);
-            }
-        });
-        document.getElementById("Panel").innerHTML = "수정 되었습니다.";
-
-    }
-
-</script>
-<script th:src="@{/js/fc.js}"></script>
 </body>
 </html>
