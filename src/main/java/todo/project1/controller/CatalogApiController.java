@@ -31,6 +31,10 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CatalogApiController {
 
+    enum CRUD {
+        CREATE, READ, UPDATE, DELETE
+    }
+
     private final CatalogService catalogService;
     private final RealJpaCatalogRepository realJpaCatalogRepository;
 
@@ -49,12 +53,12 @@ public class CatalogApiController {
     @PostMapping("/create")
     public ResponseEntity create(@RequestBody String model) {
 
-        JSONObject jsonObject = stringToJson(model);
+        JSONObject jsonObject = stringToJson(model, CRUD.CREATE);
         System.out.println(jsonObject);
 
         Catalog catalog = new Catalog();
-        catalog.setTitle((String)jsonObject.get("title"));
-        catalog.setContent((String)jsonObject.get("content"));
+        catalog.setTitle((String) jsonObject.get("title"));
+        catalog.setContent((String) jsonObject.get("content"));
         catalog.setThis_date(LocalDate.now());
 
         catalogService.register(catalog);
@@ -63,14 +67,14 @@ public class CatalogApiController {
 
     @PostMapping("/update")
     public ResponseEntity updateCatalog(@RequestBody String model) {
-        JSONObject jsonObject = stringToJson(model);
+        JSONObject jsonObject = stringToJson(model, CRUD.UPDATE);
 
         Long id = Long.valueOf((int) jsonObject.get("id"));//이렇게하는 이유는 자바에서 (LONG) 지원안함
 
         Catalog catalog = new Catalog();
         catalog.setId(id);
-        catalog.setTitle((String)jsonObject.get("title"));
-        catalog.setContent((String)jsonObject.get("content"));
+        catalog.setTitle((String) jsonObject.get("title"));
+        catalog.setContent((String) jsonObject.get("content"));
         catalog.setThis_date(catalogService.findOne(catalog.getId()).getThis_date());
 
 
@@ -82,7 +86,7 @@ public class CatalogApiController {
 
     @DeleteMapping("/delete")
     public ResponseEntity deleteCatalog(@RequestBody String model) {
-        JSONObject jsonObject = stringToJson(model);
+        JSONObject jsonObject = stringToJson(model, CRUD.DELETE);
         Long id = Long.valueOf((int) jsonObject.get("id"));//이렇게하는 이유는 자바에서 (LONG) 지원안함
 
         Catalog catalog = new Catalog();
@@ -93,10 +97,13 @@ public class CatalogApiController {
         return new ResponseEntity<>("delete success", HttpStatus.OK);
     }
 
-    public JSONObject stringToJson(String model) {
+    public JSONObject stringToJson(String model, CRUD crud) {
         JSONObject jsonObject = new JSONObject(model);
         JSONArray jsonArray = jsonObject.getJSONArray("models");
-        JSONObject explrObject = jsonArray.getJSONObject(0);
-        return explrObject;
+        if (crud == CRUD.CREATE) {
+            return jsonArray.getJSONObject(0);
+        } else {
+            return jsonArray.getJSONObject(jsonArray.length() - 1);
+        }
     }
 }
