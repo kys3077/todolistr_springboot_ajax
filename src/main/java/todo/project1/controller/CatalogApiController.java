@@ -34,7 +34,7 @@ public class CatalogApiController {
     private final CatalogService catalogService;
     private final RealJpaCatalogRepository realJpaCatalogRepository;
 
-    @PostMapping("/read")
+    @GetMapping("/read")
     public List<Catalog> showAllList() {
         return catalogService.findCatalog();
     }
@@ -50,6 +50,7 @@ public class CatalogApiController {
     public ResponseEntity create(@RequestBody String model) {
 
         JSONObject jsonObject = stringToJson(model);
+        System.out.println(jsonObject);
 
         Catalog catalog = new Catalog();
         catalog.setTitle((String)jsonObject.get("title"));
@@ -79,7 +80,7 @@ public class CatalogApiController {
     }
 
 
-    @PostMapping("/delete")
+    @DeleteMapping("/delete")
     public ResponseEntity deleteCatalog(@RequestBody String model) {
         JSONObject jsonObject = stringToJson(model);
         Long id = Long.valueOf((int) jsonObject.get("id"));//이렇게하는 이유는 자바에서 (LONG) 지원안함
