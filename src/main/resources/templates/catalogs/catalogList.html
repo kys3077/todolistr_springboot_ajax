@@ -111,9 +111,11 @@
                         {
                             command: ["edit", "destroy"], title: "&nbsp;"
                         }],
-                    editable: "inline"
+                    editable: "inline",
+                    save: function () {
+                        this.refresh();
+                    }
                 });
-                console.log(dataSource);
             });
         </script>
     </div>

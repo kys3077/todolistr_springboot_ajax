@@ -1,8 +1,12 @@
 package todo.project1.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,6 +21,7 @@ import todo.project1.service.CatalogService;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,15 +31,14 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CatalogApiController {
 
-    @Autowired
     private final CatalogService catalogService;
-    @Autowired
     private final RealJpaCatalogRepository realJpaCatalogRepository;
 
     @PostMapping("/read")
-    public List<Catalog> showAllList(){
+    public List<Catalog> showAllList() {
         return catalogService.findCatalog();
     }
+
     @GetMapping("/list")
     public Page<Catalog> showList(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -43,10 +47,13 @@ public class CatalogApiController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity create(@RequestBody Map<String, Object> model) {
+    public ResponseEntity create(@RequestBody String model) {
+
+        JSONObject jsonObject = stringToJson(model);
+
         Catalog catalog = new Catalog();
-        catalog.setTitle((String)model.get("title"));
-        catalog.setContent((String)model.get("content"));
+        catalog.setTitle((String)jsonObject.get("title"));
+        catalog.setContent((String)jsonObject.get("content"));
         catalog.setThis_date(LocalDate.now());
 
         catalogService.register(catalog);
@@ -54,13 +61,17 @@ public class CatalogApiController {
     }
 
     @PostMapping("/update")
-    public ResponseEntity updateCatalog(@RequestBody Map<String, Object> model) {
-        
+    public ResponseEntity updateCatalog(@RequestBody String model) {
+        JSONObject jsonObject = stringToJson(model);
+
+        Long id = Long.valueOf((int) jsonObject.get("id"));//이렇게하는 이유는 자바에서 (LONG) 지원안함
+
         Catalog catalog = new Catalog();
-        catalog.setId((Long)model.get("id"));
-        catalog.setTitle((String)model.get("title"));
-        catalog.setContent((String)model.get("content"));
+        catalog.setId(id);
+        catalog.setTitle((String)jsonObject.get("title"));
+        catalog.setContent((String)jsonObject.get("content"));
         catalog.setThis_date(catalogService.findOne(catalog.getId()).getThis_date());
+
 
         catalogService.register(catalog);
 
@@ -69,14 +80,22 @@ public class CatalogApiController {
 
 
     @PostMapping("/delete")
-    public ResponseEntity deleteCatalog(@RequestBody Map<String, Object> model) {
-        System.out.println("test11");
+    public ResponseEntity deleteCatalog(@RequestBody String model) {
+        JSONObject jsonObject = stringToJson(model);
+        Long id = Long.valueOf((int) jsonObject.get("id"));//이렇게하는 이유는 자바에서 (LONG) 지원안함
+
         Catalog catalog = new Catalog();
-        catalog.setId((Long) model.get("id"));
+        catalog.setId(id);
 
         catalogService.delete(catalog);
 
         return new ResponseEntity<>("delete success", HttpStatus.OK);
     }
 
+    public JSONObject stringToJson(String model) {
+        JSONObject jsonObject = new JSONObject(model);
+        JSONArray jsonArray = jsonObject.getJSONArray("models");
+        JSONObject explrObject = jsonArray.getJSONObject(0);
+        return explrObject;
+    }
 }
