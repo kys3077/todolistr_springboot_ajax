@@ -9,106 +9,70 @@ import {DropDownList} from '@progress/kendo-react-dropdowns';
 import {Window} from '@progress/kendo-react-dialogs';
 
 class App extends Component {
+    constructor(props) {
+        super(props);
 
-    state = {
-        windowVisible: false,
-        gridClickedRow: {},
-        dropdownlistCategory: null,
-        gridDataState: {
-            sort: [
-                {field: "ProductName", dir: "asc"}
-            ],
-            page: {skip: 0, take: 10}
-        }
-    }
-
-    handleDropDownChange = (e) => {
-        let newDataState = {...this.state.gridDataState}
-        if (e.target.value.CategoryID !== null) {
-            newDataState.filter = {
-                logic: 'and',
-                filters: [{field: 'CategoryID', operator: 'eq', value: e.target.value.CategoryID}]
-            }
-            newDataState.skip = 0
-        } else {
-            newDataState.filter = []
-            newDataState.skip = 0
-        }
-        this.setState({
-            dropdownlistCategory: e.target.value.CategoryID,
-            gridDataState: newDataState
-        });
-    }
-
-    handleGridDataStateChange = (e) => {
-        this.setState({gridDataState: e.data});
-    }
-    handleGridRowClick = (e) => {
-        this.setState({
-            windowVisible: true,
-            gridClickedRow: e.dataItem
-        });
-    }
-    closeWindow = (e) => {
-        this.setState({
-            windowVisible: false
-        });
-    }
-
-    render() {
-        return (
-            <div className="App">
-                <h1>Hello KendoReact!</h1>
-                <p>
-                    <DropDownList
-                        data={categories}
-                        dataItemKey="CategoryID"
-                        textField="CategoryName"
-                        defaultItem={{CategoryID: null, CategoryName: "Product categories"}}
-                        onChange={this.handleDropDownChange}
-                    />
-                    &nbsp; Selected category ID: <strong>{this.state.dropdownlistCategory}</strong>
-                </p>
-                <Grid onRowClick={this.handleGridRowClick}>
-                </Grid>
-                {this.state.windowVisible &&
-                <Window
-                    title="Product Details"
-                    onClose={this.closeWindow}
-                    height={250}>
-                    <dl style={{textAlign:"left"}}>
-                        <dt>Product Name</dt>
-                        <dd>{this.state.gridClickedRow.ProductName}</dd>
-                        <dt>Product ID</dt>
-                        <dd>{this.state.gridClickedRow.ProductID}</dd>
-                        <dt>Quantity per Unit</dt>
-                        <dd>{this.state.gridClickedRow.QuantityPerUnit}</dd>
-                    </dl>
-                </Window>
+        this.dataSource = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: "/read",
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json"
+                },
+                update: {
+                    url: "/update",
+                    type: "POST",
+                    dataType: "json",
+                    contentType: "application/json"
+                },
+                destroy: {
+                    url: "/delete",
+                    type: "DELETE",
+                    dataType: "json",
+                    contentType: "application/json"
+                },
+                create: {
+                    url: "/create",
+                    type: "POST",
+                    dataType: "json",
+                    contentType: "application/json"
+                },
+                parameterMap: function (options, operation) {
+                    if (operation !== "read" && options.models) {
+                        console.log(JSON.stringify(options));
+                        return JSON.stringify(options);
+                    }
                 }
-                <Grid
-                    data={process(products, this.state.gridDataState)}
-                    pageable={true}
-                    sortable={true}
-                    {...this.state.gridDataState}
-                    onDataStateChange={this.handleGridDataStateChange}
-                    style={{height: "400px"}}>
-                    <GridColumn field="ProductName" title="Product Name"/>
-                    <GridColumn field="UnitPrice" title="Price" format="{0:c}"/>
-                    <GridColumn field="UnitsInStock" title="Units in Stock"/>
-                    <GridColumn field="Discontinued" cell={checkboxColumn}/>
-                </Grid>
-            </div>
-        );
+            },
+            batch: true,
+            pageSize: 10,
+            schema: {
+                model: {
+                    id: "id",
+                    fields: {
+                        title: {validation: {required: true}},
+                        content: {validation: {required: true}},
+                        this_date: {validation: {required: true}}
+                    }
+                }
+            },
+        });
     }
-}
 
-class checkboxColumn extends Component {
     render() {
         return (
-            <td>
-                <input type="checkbox" checked={this.props.dataItem[this.props.field]} disabled="disabled"/>
-            </td>
+            <Grid dataSource={this.dataSource}
+                  pageable={true}
+                  height={550}
+                  toolbar={["create"]}
+                  editable={"inline"}>
+
+                <GridColumn field="title" title="제목"  />
+                <GridColumn field="content" title="내용"  />
+                <GridColumn field="this_date" title="날짜"  />
+                <GridColumn command={["edit", "destroy"]} title="&nbsp;" width="200px" />
+            </Grid>
         );
     }
 }
