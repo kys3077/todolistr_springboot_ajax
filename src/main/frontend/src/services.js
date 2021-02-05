@@ -31,12 +31,20 @@ export const getItems = () => {
 };
 
 export const updateItem = item => {
-    let index = data.findIndex(record => record.ProductID === item.ProductID);
-    console.log("index = " + index);
+    let index = data.findIndex(record => record.id === item.id);
     data[index] = item;
-    console.log("data index = " + item.ProductID);
-    console.log("product Name = " + item.ProductName);
-    console.log(item[item.ProductID]);
+
+    axios({
+        method: "post",
+        url: "/update",
+        data: item
+    })
+        .then((Response) => {
+            console.log(Response);
+        }).catch((Error) => {
+        console.log(Error);
+    });
+
     return data;
 };
 

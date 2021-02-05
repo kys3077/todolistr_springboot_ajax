@@ -52,7 +52,6 @@ public class CatalogApiController {
 
     @PostMapping("/create")
     public ResponseEntity create(@RequestBody String model) {
-        System.out.println(model);
 
         JSONObject jsonObject = stringToJson(model, CRUD.CREATE);
         System.out.println(jsonObject);
@@ -69,9 +68,11 @@ public class CatalogApiController {
     @PostMapping("/update")
     public ResponseEntity updateCatalog(@RequestBody String model) {
         JSONObject jsonObject = stringToJson(model, CRUD.UPDATE);
+        System.out.println(jsonObject);
 
         Long id = Long.valueOf((int) jsonObject.get("id"));//이렇게하는 이유는 자바에서 (LONG) 지원안함
 
+        System.out.println("id@@@@  = " + id);
         Catalog catalog = new Catalog();
         catalog.setId(id);
         catalog.setTitle((String) jsonObject.get("title"));
