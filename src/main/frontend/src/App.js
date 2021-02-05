@@ -1,77 +1,158 @@
-import React, {Component} from 'react';
+import * as React from "react";
 import '@progress/kendo-theme-default/dist/all.css';
-import './App.css';
-import categories from './categories.json';
-import products from './products.json';
-import {process} from '@progress/kendo-data-query';
-import {Grid, GridColumn} from '@progress/kendo-react-grid';
-import {DropDownList} from '@progress/kendo-react-dropdowns';
-import {Window} from '@progress/kendo-react-dialogs';
+import {
+    Grid,
+    GridColumn as Column,
+    GridToolbar,
+} from "@progress/kendo-react-grid";
+import axios from 'axios'
 
-class App extends Component {
-    constructor(props) {
-        super(props);
+import { MyCommandCell } from "./myCommandCell.jsx";
+import { insertItem, getItems, updateItem, deleteItem } from "./services.js";
 
-        this.dataSource = new kendo.data.DataSource({
-            transport: {
-                read: {
-                    url: "/read",
-                    type: "GET",
-                    dataType: "json",
-                    contentType: "application/json"
-                },
-                update: {
-                    url: "/update",
-                    type: "POST",
-                    dataType: "json",
-                    contentType: "application/json"
-                },
-                destroy: {
-                    url: "/delete",
-                    type: "DELETE",
-                    dataType: "json",
-                    contentType: "application/json"
-                },
-                create: {
-                    url: "/create",
-                    type: "POST",
-                    dataType: "json",
-                    contentType: "application/json"
-                },
-                parameterMap: function (options, operation) {
-                    if (operation !== "read" && options.models) {
-                        console.log(JSON.stringify(options));
-                        return JSON.stringify(options);
-                    }
-                }
-            },
-            batch: true,
-            pageSize: 10,
-            schema: {
-                model: {
-                    id: "id",
-                    fields: {
-                        title: {validation: {required: true}},
-                        content: {validation: {required: true}},
-                        this_date: {validation: {required: true}}
-                    }
-                }
-            },
+class App extends React.Component {
+
+    pageChange = (event) => {
+        this.setState({
+            skip: event.page.skip,
+            take: event.page.take,
+        });
+    };
+    editField = "inEdit";
+    state = {
+        skip: 0,
+        take: 5,
+        data: [],
+    };
+
+    componentDidMount() {
+        this.setState({
+            data: getItems(),
         });
     }
 
+    CommandCell = (props) => (
+        <MyCommandCell
+            {...props}
+            edit={this.enterEdit}
+            remove={this.remove}
+            add={this.add}
+            discard={this.discard}
+            update={this.update}
+            cancel={this.cancel}
+            editField={this.editField}
+        />
+    );
+
+    // modify the data in the store, db etc
+    remove = (dataItem) => {
+        const data = deleteItem(dataItem);
+        this.setState({ data });
+    };
+
+    add = (dataItem) => {
+        dataItem.inEdit = true;
+
+        const data = insertItem(dataItem);
+        this.setState({
+            data: data,
+        });
+    };
+
+    update = (dataItem) => {
+        dataItem.inEdit = false;
+        const data = updateItem(dataItem);
+        console.log(data);
+        this.setState({ data });
+    };
+
+    // Local state operations
+    discard = (dataItem) => {
+        const data = [...this.state.data];
+        data.splice(0, 1);
+        this.setState({ data });
+    };
+
+    cancel = (dataItem) => {
+        const originalItem = getItems().find(
+            (p) => p.ProductID === dataItem.ProductID
+        );
+        const data = this.state.data.map((item) =>
+            item.ProductID === originalItem.ProductID ? originalItem : item
+        );
+
+        this.setState({ data });
+    };
+
+    enterEdit = (dataItem) => {
+        this.setState({
+            data: this.state.data.map((item) =>
+                item.ProductID === dataItem.ProductID ? { ...item, inEdit: true } : item
+            ),
+        });
+    };
+
+    itemChange = (event) => {
+        const data = this.state.data.map((item) =>
+            item.ProductID === event.dataItem.ProductID
+                ? { ...item, [event.field]: event.value }
+                : item
+        );
+
+        this.setState({ data });
+    };
+
+    addNew = () => {
+        const newDataItem = { inEdit: true, Discontinued: false };
+
+        this.setState({
+            data: [newDataItem, ...this.state.data],
+        });
+    };
+
     render() {
         return (
-            <Grid dataSource={this.dataSource}
-                  pageable={true}
-                  height={550}
-                  toolbar={["create"]}
-                  editable={"inline"}>
-
-                <GridColumn field="title" title="제목"  />
-                <GridColumn field="content" title="내용"  />
-                <GridColumn field="this_date" title="날짜"  />
-                <GridColumn command={["edit", "destroy"]} title="&nbsp;" width="200px" />
+            <Grid
+                style={{ height: "420px" }}
+                // data={this.state.data}
+                data={this.state.data.slice(
+                    this.state.skip,
+                    this.state.take + this.state.skip
+                )}
+                skip={this.state.skip}
+                take={this.state.take}
+                total={this.state.data.length}
+                pageable={true}
+                onPageChange={this.pageChange}
+                onItemChange={this.itemChange}
+                editField={this.editField}
+            >
+                <GridToolbar>
+                    <button
+                        title="Add new"
+                        className="k-button k-primary"
+                        onClick={this.addNew}
+                    >
+                        Add new
+                    </button>
+                </GridToolbar>
+                <Column field="ProductID" title="Id" width="50px" editable={false} />
+                <Column field="ProductName" title="Product Name" width="200px" />
+                <Column
+                    field="FirstOrderedOn"
+                    title="First Ordered"
+                    editor="date"
+                    format="{0:d}"
+                    width="150px"
+                />
+                <Column
+                    field="UnitsInStock"
+                    title="Units"
+                    width="120px"
+                    editor="numeric"
+                />
+                <Column field="Discontinued" title="Discontinued" editor="boolean" />
+                <Column cell={this.CommandCell} width="200px" />
             </Grid>
         );
     }
