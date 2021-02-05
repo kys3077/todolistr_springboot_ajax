@@ -9,6 +9,7 @@ import axios from 'axios'
 
 import {MyCommandCell} from "./myCommandCell.jsx";
 import {insertItem, getItems, updateItem, deleteItem} from "./services.js";
+import Subject from "./components/Subject";
 
 class App extends React.Component {
 
@@ -21,7 +22,7 @@ class App extends React.Component {
     editField = "inEdit";
     state = {
         skip: 0,
-        take: 5,
+        take: 10,
         data: [],
     };
 
@@ -124,8 +125,8 @@ class App extends React.Component {
 
     render() {
         return (
-            console.log("render"),
-                console.log(this.state.data),
+            <div>
+                <Subject></Subject>
                 <Grid
                     style={{height: "420px"}}
                     // data={this.state.data}
@@ -152,7 +153,8 @@ class App extends React.Component {
                     </GridToolbar>
                     <Column field="id" title="Id" width="50px" editable={false}/>
                     <Column field="title" title="제목" width="200px"/>
-                    <Column field="content" title="내용" width="200px"/>
+                    <Column field="content" title="내용" width="500px"/>
+                    <Column field="this_date" title="날짜" width="200px"/>
                     {/*<Column*/}
                     {/*    field="this_date"*/}
                     {/*    title="날짜"*/}
@@ -162,6 +164,7 @@ class App extends React.Component {
                     {/*/>*/}
                     <Column cell={this.CommandCell} width="200px"/>
                 </Grid>
+            </div>
         );
     }
 }
