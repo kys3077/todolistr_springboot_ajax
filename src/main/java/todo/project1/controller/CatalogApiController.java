@@ -52,6 +52,7 @@ public class CatalogApiController {
 
     @PostMapping("/create")
     public ResponseEntity create(@RequestBody String model) {
+        System.out.println(model);
 
         JSONObject jsonObject = stringToJson(model, CRUD.CREATE);
         System.out.println(jsonObject);
@@ -99,11 +100,6 @@ public class CatalogApiController {
 
     public JSONObject stringToJson(String model, CRUD crud) {
         JSONObject jsonObject = new JSONObject(model);
-        JSONArray jsonArray = jsonObject.getJSONArray("models");
-        if (crud == CRUD.CREATE) {
-            return jsonArray.getJSONObject(0);
-        } else {
-            return jsonArray.getJSONObject(jsonArray.length() - 1);
-        }
+        return jsonObject;
     }
 }

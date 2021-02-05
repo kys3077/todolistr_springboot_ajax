@@ -39,6 +39,7 @@ class App extends React.Component {
     };
 
     componentDidMount() {
+        getItems();
         this.getItem();
     }
 
@@ -114,7 +115,7 @@ class App extends React.Component {
     };
 
     addNew = () => {
-        const newDataItem = {inEdit: true, Discontinued: false};
+        const newDataItem = {inEdit: true};
 
         this.setState({
             data: [newDataItem, ...this.state.data],
@@ -152,13 +153,13 @@ class App extends React.Component {
                     <Column field="id" title="Id" width="50px" editable={false}/>
                     <Column field="title" title="제목" width="200px"/>
                     <Column field="content" title="내용" width="200px"/>
-                    <Column
-                        field="this_date"
-                        title="날짜"
-                        editor="date"
-                        format="{0:d}"
-                        width="150px"
-                    />
+                    {/*<Column*/}
+                    {/*    field="this_date"*/}
+                    {/*    title="날짜"*/}
+                    {/*    editor="date"*/}
+                    {/*    format="{0:d}"*/}
+                    {/*    width="150px"*/}
+                    {/*/>*/}
                     <Column cell={this.CommandCell} width="200px"/>
                 </Grid>
         );
