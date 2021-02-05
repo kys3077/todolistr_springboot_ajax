@@ -1,7 +1,6 @@
-import { sampleProducts } from "./sample-products.jsx";
 
-let data = [...sampleProducts];
 import axios from 'axios'
+let data = [];
 
 const generateId = data =>
     data.reduce((acc, current) => Math.max(acc, current.ProductID), 0) + 1;
@@ -14,6 +13,12 @@ export const insertItem = item => {
 };
 
 export const getItems = () => {
+    axios.get('/read').then((Response)=>{
+        console.log(Response.data);
+        data = Response.data;
+    }).catch((Error)=>{
+        console.log(Error);
+    })
     return data;
 };
 

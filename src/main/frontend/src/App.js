@@ -7,8 +7,8 @@ import {
 } from "@progress/kendo-react-grid";
 import axios from 'axios'
 
-import { MyCommandCell } from "./myCommandCell.jsx";
-import { insertItem, getItems, updateItem, deleteItem } from "./services.js";
+import {MyCommandCell} from "./myCommandCell.jsx";
+import {insertItem, getItems, updateItem, deleteItem} from "./services.js";
 
 class App extends React.Component {
 
@@ -25,10 +25,21 @@ class App extends React.Component {
         data: [],
     };
 
+    getItem = async () => {
+        axios
+            .get('/read')
+            .then((Response) => {
+                this.setState({
+                    data: Response.data,
+                });
+                console.log(Response.data);
+            }).catch((Error) => {
+            console.log(Error);
+        })
+    };
+
     componentDidMount() {
-        this.setState({
-            data: getItems(),
-        });
+        this.getItem();
     }
 
     CommandCell = (props) => (
@@ -47,7 +58,7 @@ class App extends React.Component {
     // modify the data in the store, db etc
     remove = (dataItem) => {
         const data = deleteItem(dataItem);
-        this.setState({ data });
+        this.setState({data});
     };
 
     add = (dataItem) => {
@@ -63,14 +74,14 @@ class App extends React.Component {
         dataItem.inEdit = false;
         const data = updateItem(dataItem);
         console.log(data);
-        this.setState({ data });
+        this.setState({data});
     };
 
     // Local state operations
     discard = (dataItem) => {
         const data = [...this.state.data];
         data.splice(0, 1);
-        this.setState({ data });
+        this.setState({data});
     };
 
     cancel = (dataItem) => {
@@ -81,13 +92,13 @@ class App extends React.Component {
             item.ProductID === originalItem.ProductID ? originalItem : item
         );
 
-        this.setState({ data });
+        this.setState({data});
     };
 
     enterEdit = (dataItem) => {
         this.setState({
             data: this.state.data.map((item) =>
-                item.ProductID === dataItem.ProductID ? { ...item, inEdit: true } : item
+                item.ProductID === dataItem.ProductID ? {...item, inEdit: true} : item
             ),
         });
     };
@@ -95,15 +106,15 @@ class App extends React.Component {
     itemChange = (event) => {
         const data = this.state.data.map((item) =>
             item.ProductID === event.dataItem.ProductID
-                ? { ...item, [event.field]: event.value }
+                ? {...item, [event.field]: event.value}
                 : item
         );
 
-        this.setState({ data });
+        this.setState({data});
     };
 
     addNew = () => {
-        const newDataItem = { inEdit: true, Discontinued: false };
+        const newDataItem = {inEdit: true, Discontinued: false};
 
         this.setState({
             data: [newDataItem, ...this.state.data],
@@ -112,48 +123,44 @@ class App extends React.Component {
 
     render() {
         return (
-            <Grid
-                style={{ height: "420px" }}
-                // data={this.state.data}
-                data={this.state.data.slice(
-                    this.state.skip,
-                    this.state.take + this.state.skip
-                )}
-                skip={this.state.skip}
-                take={this.state.take}
-                total={this.state.data.length}
-                pageable={true}
-                onPageChange={this.pageChange}
-                onItemChange={this.itemChange}
-                editField={this.editField}
-            >
-                <GridToolbar>
-                    <button
-                        title="Add new"
-                        className="k-button k-primary"
-                        onClick={this.addNew}
-                    >
-                        Add new
-                    </button>
-                </GridToolbar>
-                <Column field="ProductID" title="Id" width="50px" editable={false} />
-                <Column field="ProductName" title="Product Name" width="200px" />
-                <Column
-                    field="FirstOrderedOn"
-                    title="First Ordered"
-                    editor="date"
-                    format="{0:d}"
-                    width="150px"
-                />
-                <Column
-                    field="UnitsInStock"
-                    title="Units"
-                    width="120px"
-                    editor="numeric"
-                />
-                <Column field="Discontinued" title="Discontinued" editor="boolean" />
-                <Column cell={this.CommandCell} width="200px" />
-            </Grid>
+            console.log("render"),
+                console.log(this.state.data),
+                <Grid
+                    style={{height: "420px"}}
+                    // data={this.state.data}
+                    data={this.state.data.slice(
+                        this.state.skip,
+                        this.state.take + this.state.skip
+                    )}
+                    skip={this.state.skip}
+                    take={this.state.take}
+                    total={this.state.data.length}
+                    pageable={true}
+                    onPageChange={this.pageChange}
+                    onItemChange={this.itemChange}
+                    editField={this.editField}
+                >
+                    <GridToolbar>
+                        <button
+                            title="Add new"
+                            className="k-button k-primary"
+                            onClick={this.addNew}
+                        >
+                            Add new
+                        </button>
+                    </GridToolbar>
+                    <Column field="id" title="Id" width="50px" editable={false}/>
+                    <Column field="title" title="제목" width="200px"/>
+                    <Column field="content" title="내용" width="200px"/>
+                    <Column
+                        field="this_date"
+                        title="날짜"
+                        editor="date"
+                        format="{0:d}"
+                        width="150px"
+                    />
+                    <Column cell={this.CommandCell} width="200px"/>
+                </Grid>
         );
     }
 }
