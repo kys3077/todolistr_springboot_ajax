@@ -49,7 +49,17 @@ export const updateItem = item => {
 };
 
 export const deleteItem = item => {
-    let index = data.findIndex(record => record.ProductID === item.ProductID);
+    let index = data.findIndex(record => record.id === item.id);
     data.splice(index, 1);
+    axios({
+        method: "delete",
+        url: "/delete",
+        data: item
+    })
+        .then((Response) => {
+            console.log(Response);
+        }).catch((Error) => {
+        console.log(Error);
+    });
     return data;
 };

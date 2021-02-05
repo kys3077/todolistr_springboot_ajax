@@ -87,10 +87,10 @@ class App extends React.Component {
 
     cancel = (dataItem) => {
         const originalItem = getItems().find(
-            (p) => p.ProductID === dataItem.ProductID
+            (p) => p.id === dataItem.id
         );
         const data = this.state.data.map((item) =>
-            item.ProductID === originalItem.ProductID ? originalItem : item
+            item.id === originalItem.id ? originalItem : item
         );
 
         this.setState({data});
@@ -99,14 +99,14 @@ class App extends React.Component {
     enterEdit = (dataItem) => {
         this.setState({
             data: this.state.data.map((item) =>
-                item.ProductID === dataItem.ProductID ? {...item, inEdit: true} : item
+                item.id === dataItem.id ? {...item, inEdit: true} : item
             ),
         });
     };
 
     itemChange = (event) => {
         const data = this.state.data.map((item) =>
-            item.ProductID === event.dataItem.ProductID
+            item.id === event.dataItem.id
                 ? {...item, [event.field]: event.value}
                 : item
         );
