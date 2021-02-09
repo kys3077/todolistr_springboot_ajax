@@ -22,7 +22,7 @@ export const insertItem = item => {
 
 export const getItems = () => {
     axios.get('/read').then((Response) => {
-        console.log(Response.data);
+        console.log("getitem", Response.data);
         data = Response.data;
     }).catch((Error) => {
         console.log(Error);

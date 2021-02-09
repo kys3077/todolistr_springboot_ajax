@@ -1,4 +1,3 @@
-import * as React from "react";
 import '@progress/kendo-theme-default/dist/all.css';
 import {
     Grid,
@@ -10,143 +9,133 @@ import axios from 'axios'
 import {MyCommandCell} from "./myCommandCell.jsx";
 import {insertItem, getItems, updateItem, deleteItem} from "./services.js";
 import Subject from "./components/Subject";
+import {useEffect, useState} from "react";
 
-class App extends React.Component {
+function App() {
+    const [skip, setSkip] = useState(0);
+    const [take, setTake] = useState(5);
+    const [data, setData] = useState([]);
 
-    pageChange = (event) => {
-        this.setState({
-            skip: event.page.skip,
-            take: event.page.take,
-        });
+
+    const pageChange = (event) => {
+        setSkip(event.page.skip);
+        setTake(event.page.take);
     };
-    editField = "inEdit";
-    state = {
-        skip: 0,
-        take: 10,
-        data: [],
-    };
+    const editField = "inEdit";
 
-    getItem = async () => {
+    const getItem = () => {
         axios
             .get('/read')
             .then((Response) => {
-                this.setState({
-                    data: Response.data,
-                });
+                setData(Response.data);
                 console.log(Response.data);
             }).catch((Error) => {
             console.log(Error);
         })
     };
 
-    componentDidMount() {
+    useEffect(() => {
         getItems();
-        this.getItem();
-    }
+        getItem();
+        console.log("useEffect", data);
+    }, []);
 
-    CommandCell = (props) => (
+    const CommandCell = (props) => (
         <MyCommandCell
             {...props}
-            edit={this.enterEdit}
-            remove={this.remove}
-            add={this.add}
-            discard={this.discard}
-            update={this.update}
-            cancel={this.cancel}
-            editField={this.editField}
+            edit={enterEdit}
+            remove={remove}
+            add={add}
+            discard={discard}
+            update={update}
+            cancel={cancel}
+            editField={editField}
         />
     );
 
     // modify the data in the store, db etc
-    remove = (dataItem) => {
-        const data = deleteItem(dataItem);
-        this.setState({data});
+    const remove = (dataItem) => {
+        const temp = deleteItem(dataItem);
+        setData(temp);
+        console.log("delete");
     };
 
-    add = (dataItem) => {
+
+    const add = (dataItem) => {
         dataItem.inEdit = true;
 
-        const data = insertItem(dataItem);
-        this.setState({
-            data: data,
-        });
+        const temp = insertItem(dataItem);
+        setData(temp);
     };
 
-    update = (dataItem) => {
+
+    const update = (dataItem) => {
         dataItem.inEdit = false;
-        const data = updateItem(dataItem);
-        console.log(data);
-        this.setState({data});
+        const temp = updateItem(dataItem);
+        setData(temp);
     };
-
     // Local state operations
-    discard = (dataItem) => {
-        const data = [...this.state.data];
-        data.splice(0, 1);
-        this.setState({data});
+    const discard = (dataItem) => {
+        const temp = [...data];
+        temp.splice(0, 1);
+        setData(temp);
     };
 
-    cancel = (dataItem) => {
+    const cancel = (dataItem) => {
         const originalItem = getItems().find(
             (p) => p.id === dataItem.id
         );
-        const data = this.state.data.map((item) =>
+        const temp = data.map((item) =>
             item.id === originalItem.id ? originalItem : item
         );
 
-        this.setState({data});
+        setData(temp);
     };
 
-    enterEdit = (dataItem) => {
-        this.setState({
-            data: this.state.data.map((item) =>
-                item.id === dataItem.id ? {...item, inEdit: true} : item
-            ),
-        });
+    const enterEdit = (dataItem) => {
+        const temp = data.map((item) =>
+            item.id === dataItem.id ? {...item, inEdit: true} : item
+        );
+        setData(temp);
     };
 
-    itemChange = (event) => {
-        const data = this.state.data.map((item) =>
+    const itemChange = (event) => {
+        const temp = data.map((item) =>
             item.id === event.dataItem.id
                 ? {...item, [event.field]: event.value}
                 : item
         );
 
-        this.setState({data});
+        setData(temp);
     };
 
-    addNew = () => {
-        const newDataItem = {inEdit: true};
 
-        this.setState({
-            data: [newDataItem, ...this.state.data],
-        });
+    const addNew = () => {
+        const newDataItem = {inEdit: true, Discontinued: false};
+        const temp = [newDataItem, ...data];
+        setData(temp);
     };
 
-    render() {
-        return (
+    return (
+        console.log("return", data),
             <div>
-                <Subject></Subject>
+                <Subject/>
                 <Grid
                     style={{height: "420px"}}
-                    // data={this.state.data}
-                    data={this.state.data.slice(
-                        this.state.skip,
-                        this.state.take + this.state.skip
-                    )}
-                    skip={this.state.skip}
-                    take={this.state.take}
-                    total={this.state.data.length}
+                    data={data.slice(skip, take + skip)}
+                    skip={skip}
+                    take={take}
+                    total={data.length}
                     pageable={true}
-                    onPageChange={this.pageChange}
-                    onItemChange={this.itemChange}
-                    editField={this.editField}
+                    onPageChange={pageChange}
+                    onItemChange={itemChange}
+                    editField={editField}
                 >
                     <GridToolbar>
                         <button
                             title="Add new"
                             className="k-button k-primary"
-                            onClick={this.addNew}
+                            onClick={addNew}
                         >
                             Add new
                         </button>
@@ -162,11 +151,11 @@ class App extends React.Component {
                     {/*    format="{0:d}"*/}
                     {/*    width="150px"*/}
                     {/*/>*/}
-                    <Column cell={this.CommandCell} width="200px"/>
+                    <Column cell={CommandCell} width="200px"/>
                 </Grid>
             </div>
-        );
-    }
+    );
+
 }
 
 export default App;
