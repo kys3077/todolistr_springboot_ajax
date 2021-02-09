@@ -15,30 +15,36 @@ function App() {
     const [skip, setSkip] = useState(0);
     const [take, setTake] = useState(5);
     const [data, setData] = useState([]);
-
+    const [pageInfo, setPageInfo] = useState({});
 
     const pageChange = (event) => {
         setSkip(event.page.skip);
-        setTake(event.page.take);
     };
     const editField = "inEdit";
 
     const getItem = () => {
-        axios
-            .get('/read')
+        axios({
+            method: 'post',
+            url: '/list',
+            data: {
+                page: (skip/take),
+                size: take
+            }
+        })
             .then((Response) => {
-                setData(Response.data);
+                setPageInfo(Response.data);
+                setData(Response.data.content);
                 console.log(Response.data);
             }).catch((Error) => {
             console.log(Error);
-        })
+        });
     };
 
     useEffect(() => {
-        getItems();
+        //getItems();
         getItem();
         console.log("useEffect", data);
-    }, []);
+    }, [skip]);
 
     const CommandCell = (props) => (
         <MyCommandCell
@@ -122,10 +128,10 @@ function App() {
                 <Subject/>
                 <Grid
                     style={{height: "420px"}}
-                    data={data.slice(skip, take + skip)}
+                    data={data}
                     skip={skip}
                     take={take}
-                    total={data.length}
+                    total={pageInfo.totalElements}
                     pageable={true}
                     onPageChange={pageChange}
                     onItemChange={itemChange}

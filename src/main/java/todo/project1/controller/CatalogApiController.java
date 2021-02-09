@@ -43,9 +43,9 @@ public class CatalogApiController {
         return catalogService.findCatalog();
     }
 
-    @GetMapping("/list")
-    public Page<Catalog> showList(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+    @PostMapping("/list")
+    public Page<Catalog> showList(@RequestBody HashMap<String, Object> model) {
+        Pageable pageable = PageRequest.of((int)model.get("page"), (int)model.get("size"));
         Page<Catalog> catalogs = realJpaCatalogRepository.findAll(pageable);
         return catalogs;
     }
