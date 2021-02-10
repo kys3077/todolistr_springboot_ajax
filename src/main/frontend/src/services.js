@@ -1,5 +1,4 @@
 import axios from 'axios'
-
 let data = [];
 
 export const insertItem = item => {
@@ -20,14 +19,8 @@ export const insertItem = item => {
     return data;
 };
 
-export const getItems = () => {
-    axios.get('/read').then((Response) => {
-        console.log("getitem", Response.data);
-        data = Response.data;
-    }).catch((Error) => {
-        console.log(Error);
-    })
-    return data;
+export const getItems = (item) => {
+    data = item;
 };
 
 export const updateItem = item => {
@@ -48,10 +41,10 @@ export const updateItem = item => {
     return data;
 };
 
-export const deleteItem = item => {
+export const deleteItem = async(item) => {
     let index = data.findIndex(record => record.id === item.id);
     data.splice(index, 1);
-    axios({
+    await axios({
         method: "delete",
         url: "/delete",
         data: item

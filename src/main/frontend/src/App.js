@@ -27,21 +27,20 @@ function App() {
             method: 'post',
             url: '/list',
             data: {
-                page: (skip/take),
+                page: (skip / take),
                 size: take
             }
         })
             .then((Response) => {
                 setPageInfo(Response.data);
                 setData(Response.data.content);
-                console.log(Response.data);
+                getItems(Response.data.content);
             }).catch((Error) => {
             console.log(Error);
         });
     };
 
     useEffect(() => {
-        //getItems();
         getItem();
         console.log("useEffect", data);
     }, [skip]);
@@ -60,9 +59,11 @@ function App() {
     );
 
     // modify the data in the store, db etc
-    const remove = (dataItem) => {
+    const remove = async (dataItem) => {
         const temp = deleteItem(dataItem);
-        setData(temp);
+        console.log("remove", temp);
+        // setData(temp);
+        getItem();
         console.log("delete");
     };
 
@@ -88,13 +89,16 @@ function App() {
     };
 
     const cancel = (dataItem) => {
-        const originalItem = getItems().find(
-            (p) => p.id === dataItem.id
+        console.log("cancel", dataItem);
+        const originalItem = data.find(
+            p => p.id === dataItem.id
         );
         const temp = data.map((item) =>
             item.id === originalItem.id ? originalItem : item
         );
+        console.log("calcel2", temp);
 
+        dataItem.inEdit = false;
         setData(temp);
     };
 
