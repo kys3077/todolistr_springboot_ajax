@@ -24,9 +24,9 @@ function App() {
 
     const getItem = () => {
         axios({
-            method: 'post',
+            method: 'get',
             url: '/list',
-            data: {
+            params: {
                 page: (skip / take),
                 size: take
             }
