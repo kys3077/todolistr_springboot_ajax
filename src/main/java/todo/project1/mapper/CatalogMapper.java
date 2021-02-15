@@ -13,8 +13,9 @@ public interface CatalogMapper {
     @Select("SELECT * FROM CATALOG")
     List<Catalog> getCatalogList();
 
-    @Insert("INSERT INTO CATALOG VALUES(#{id}, #{title}, #{content}, #{this_date}")
-    int insertCatalog(@Param("id") String id, @Param("title") String title, @Param("content") String content, @Param("this_date") String this_date);
+    @Insert("INSERT INTO CATALOG (id, title, content, this_date) VALUES(null, #{title}, #{content}, #{this_date})")
+    @Options(useGeneratedKeys = true)
+    int insertCatalog(@Param("title") String title, @Param("content") String content, @Param("this_date") String this_date);
 
     @Update("UPDATE CATALOG SET title=#{title}, content=#{content}, this_date=#{this_date} WHERE id=#{id}")
     int updateCatalog(@Param("id") String id, @Param("title") String title, @Param("content") String content, @Param("this_date") String this_date);

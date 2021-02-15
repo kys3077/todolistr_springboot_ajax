@@ -48,9 +48,9 @@ public class CatalogApiController {
     }
 
     @PostMapping("/create")
-    int insertCatalog(@RequestParam("id")String id, @RequestParam("title") String title, @RequestParam("content") String content, @RequestParam("this_date") String this_date){
+    int insertCatalog(@RequestParam("title") String title, @RequestParam("content") String content, @RequestParam("this_date") String this_date){
         System.out.println();
-        return mapper.insertCatalog(id, title, content, this_date);
+        return mapper.insertCatalog(title, content, this_date);
     }
 
     @PostMapping("/update")
