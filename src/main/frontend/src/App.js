@@ -7,42 +7,26 @@ import {
 import axios from 'axios'
 
 import {MyCommandCell} from "./myCommandCell.jsx";
-import {insertItem, getItems, updateItem, deleteItem} from "./services.js";
+import {insertItem, getItem, updateItem, deleteItem} from "./services.js";
 import Subject from "./components/Subject";
 import {useEffect, useState} from "react";
 
 function App() {
     const [skip, setSkip] = useState(0);
-    const [take, setTake] = useState(5);
     const [data, setData] = useState([]);
     const [pageInfo, setPageInfo] = useState({});
+    const take = 5;
 
     const pageChange = (event) => {
         setSkip(event.page.skip);
     };
     const editField = "inEdit";
 
-    const getItem = () => {
-        axios({
-            method: 'get',
-            url: '/list',
-            params: {
-                page: (skip / take),
-                size: take
-            }
-        })
-            .then((Response) => {
-                setPageInfo(Response.data);
-                setData(Response.data.content);
-                getItems(Response.data.content);
-            }).catch((Error) => {
-            console.log(Error);
-        });
-    };
-
     useEffect(() => {
-        getItem();
-        console.log("useEffect", data);
+        getItem(skip, take).then(result => {
+            setPageInfo(result.data.totalElements);
+            setData(result.data.content);
+        });
     }, [skip]);
 
     const CommandCell = (props) => (
@@ -59,12 +43,13 @@ function App() {
     );
 
     // modify the data in the store, db etc
-    const remove = async (dataItem) => {
-        const temp = deleteItem(dataItem);
-        console.log("remove", temp);
-        // setData(temp);
-        getItem();
-        console.log("delete");
+    const remove = (dataItem) => {
+        deleteItem(dataItem).then(Response=>{
+            getItem(skip, take).then(Response => {
+                setPageInfo(Response.data.totalElements);
+                setData(Response.data.content);
+            });
+        });
     };
 
 
@@ -89,14 +74,12 @@ function App() {
     };
 
     const cancel = (dataItem) => {
-        console.log("cancel", dataItem);
         const originalItem = data.find(
             p => p.id === dataItem.id
         );
         const temp = data.map((item) =>
             item.id === originalItem.id ? originalItem : item
         );
-        console.log("calcel2", temp);
 
         dataItem.inEdit = false;
         setData(temp);
@@ -135,7 +118,7 @@ function App() {
                     data={data}
                     skip={skip}
                     take={take}
-                    total={pageInfo.totalElements}
+                    total={pageInfo}
                     pageable={true}
                     onPageChange={pageChange}
                     onItemChange={itemChange}

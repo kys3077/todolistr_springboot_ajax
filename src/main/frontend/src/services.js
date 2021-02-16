@@ -19,8 +19,17 @@ export const insertItem = item => {
     return data;
 };
 
-export const getItems = (item) => {
-    data = item;
+export const getItem = async (skip, take) => {
+    const result = await axios({
+        method: 'get',
+        url: '/list',
+        params: {
+            page: (skip / take),
+            size: take
+        }
+    })
+    data = result.data.content
+    return result;
 };
 
 export const updateItem = item => {
@@ -44,15 +53,10 @@ export const updateItem = item => {
 export const deleteItem = async(item) => {
     let index = data.findIndex(record => record.id === item.id);
     data.splice(index, 1);
-    await axios({
+    const response = await axios({
         method: "delete",
         url: "/delete",
         data: item
     })
-        .then((Response) => {
-            console.log(Response);
-        }).catch((Error) => {
-        console.log(Error);
-    });
-    return data;
+    return response;
 };
